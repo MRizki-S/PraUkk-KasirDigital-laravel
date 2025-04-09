@@ -1,42 +1,39 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Pelanggan;
-use App\Models\Penjualan;
-use App\Models\Produk;
+use App\Models\Fasilitas;
+use App\Models\Kamar;
+use App\Models\KamarType;
+use App\Models\Reservation;
 use App\Models\User;
 
 class DashboardController extends Controller
 {
     public function dashboard()
     {
-        $totalProduk = Produk::count();
-        $totalPelanggan = Pelanggan::count();
-        $totalPenjualan = Penjualan::count();
-        $totalPetugas = User::where('role', 'petugas')->count();
+        $totalKamar     = Kamar::count();
+        $totalTipeKamar = KamarType::count();
+        $totalFasilitas = Fasilitas::count();
+        $totalPengguna  = User::where('role', 'user')->count();
 
-        $produkData = Produk::select('nama_produk', 'stok')->get();
-        // dd($produkData);
+        $kamarByType     = KamarType::all();
+        $kamarLabels     = $kamarByType->pluck('nama');
+        $kamarJumlahData = $kamarByType->pluck('jumlah_kamar');
 
-        $dataPembelianPelanggan = Penjualan::with('pelanggan') // Load data pelanggan terkait
-        ->get()
-        ->groupBy('pelanggan_id') // Mengelompokkan data berdasarkan pelanggan_id
-        ->map(function ($sales, $pelanggan_id) {
-            $pelanggan = $sales->first()->pelanggan; // Ambil data pelanggan dari salah satu item
-            $totalSales = $sales->count(); // Hitung total transaksi
+        $incomeByMonth = Reservation::selectRaw('MONTH(created_at) as bulan, SUM(total_harga) as total_income')
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->get();
+    //    dd( $incomeByMonth);
 
-            return [
-                'nama_pelanggan' => $pelanggan->nama_pelanggan,
-                'total_pembelian' => $totalSales,
-            ];
-        })
-        ->sortByDesc('total_pembelian') // Urutkan berdasarkan total pembelian
-        ->take(5) // Ambil 5 pelanggan teratas
-        ->values(); // Reset key array'
-        // dd($dataPembelianPelanggan);
+        // Pisahkan label bulan & data income
+        $labelsBulan = $incomeByMonth->pluck('bulan')->map(function ($bulan) {
+            return date('F', mktime(0, 0, 0, $bulan, 1)); // Konversi angka bulan ke nama bulan (Januari, Februari, dst)
+        });
+        // dd($labels);
 
-        return view('dashboard.index', compact('totalProduk', 'totalPelanggan', 'totalPenjualan', 'totalPetugas', 'produkData', 'dataPembelianPelanggan'));
-        // return view('dashboard.index');
+        $dataPerbulan = $incomeByMonth->pluck('total_income');
+
+        return view('dashboard.index', compact('totalKamar', 'totalTipeKamar', 'totalFasilitas', 'totalPengguna', 'kamarLabels', 'kamarJumlahData' , 'labelsBulan', 'dataPerbulan'));
     }
 }

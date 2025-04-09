@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pelanggan', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_pelanggan', 255);
-            $table->text('alamat');
-            $table->string('no_telepon', 15);
-            $table->timestamps();
+        Schema::table('kamar_type', function (Blueprint $table) {
+            $table->string('image')->nullable()->after('harga_permalam');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pelanggan');
+        Schema::table('kamar_type', function (Blueprint $table) {
+            $table->dropColumn('image');
+        });
     }
 };

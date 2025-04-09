@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PelangganController;
-use App\Http\Controllers\PenjualanController;
-use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\FasilitasController;
+use App\Http\Controllers\FasilitasKamarController;
+use App\Http\Controllers\KamarController;
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\ReservasiController;
+use App\Http\Controllers\TipeKamarController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,46 +20,60 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
  */
+Route::get('/', [MainController::class, 'index']);
 
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/aksiLogin', [AuthController::class, 'aksiLogin']);
-    // Route::get('/register', [AuthController::class, 'register']);
-    // Route::post('/registration', [AuthController::class, 'registration']);
+    Route::get('/register', [AuthController::class, 'register']);
+    Route::post('/registration', [AuthController::class, 'createAccount']);
 });
 
 Route::group(['middleware' => 'auth'], function () {
-    // Route::get('/', function () {
-    //     return view('produk.index');
-    // });
-    Route::get('/', function () {
-        return view('welcome');
-    });
-
     Route::get('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/dashboard', [DashboardController::class, 'dashboard']);
+    // akses admin dan petugas
+    Route::middleware(['rolePetugasAdmin'])->group(function () {
+        Route::get('/tipe-kamar', [TipeKamarController::class, 'index']);
+        Route::get('/kamar', [KamarController::class, 'index']);
 
-    Route::get('/produk', [ProdukController::class, 'index']);
-    Route::get('/produk/search', [ProdukController::class, 'search'])->name('produk.search');
-    Route::post('/tambahProduk', [ProdukController::class, 'store']);
-    Route::put('/editProduk/{id}', [ProdukController::class, 'update']);
-    Route::get('deleteProduk/{id}', [ProdukController::class, 'delete']);
+        Route::get('/reservasi', [ReservasiController::class, 'index']);
+        Route::get('/deleteReservasi/{id}', [ReservasiController::class, 'delete']);
+        // Route::get('/pesan-sekarang', [ReservasiController::class, 'pesanSekarang']);
+        // Route::get('/download-buktiPemesanan/{id}', [ReservasiController::class, 'cetakBuktiPemesanan']);
+        Route::get('/dashboard', [DashboardController::class, 'dashboard']);
 
-    Route::middleware(['roleAdmin'])->group(function () {
-        Route::get('/register', [AuthController::class, 'register']);
-        Route::post('/registration', [AuthController::class, 'registration']);
-        Route::put('/editUser/{id}', [AuthController::class, 'editUser']);
-        Route::get('/deleteUser/{id}', [AuthController::class, 'deleteUser']);
+        // fasilitas Kamar
+        Route::get('/fasilitas-kamar', [FasilitasKamarController::class, 'index']);
 
-        Route::get('/pelanggan', [PelangganController::class, 'index']);
-        Route::post('/tambahPelanggan', [PelangganController::class, 'store']);
-        Route::put('/editPelanggan/{id}', [PelangganController::class, 'update']);
-        Route::get('/deletePelanggan/{id}', [PelangganController::class, 'delete']);
     });
 
-        Route::get('/penjualan', [PenjualanController::class, 'index']);
-        Route::post('/tambahPenjualan', [PenjualanController::class, 'store']);
-        Route::put('/editPenjualan/{id}', [PenjualanController::class, 'update']);
-        Route::get('/deletePenjualan/{id}', [PenjualanController::class, 'delete']);
+    // akses only admin
+    Route::middleware(['roleAdmin'])->group(function () {
+
+        //  Tipe Kamar
+        Route::post('/tambahTipeKamar', [TipeKamarController::class, 'store']);
+        Route::put('/editTipeKamar/{id}', [TipeKamarController::class, 'update']);
+        Route::get('/deleteTipeKamar/{id}', [TipeKamarController::class, 'delete']);
+
+        // kamar
+        Route::post('/tambahKamar', [KamarController::class, 'store']);
+        Route::put('/editKamar/{id}', [KamarController::class, 'update']);
+        Route::get('/deleteKamar/{id}', [KamarController::class, 'delete']);
+
+        // fasilitas
+        Route::get('/fasilitas', [FasilitasController::class, 'index']);
+        Route::post('/tambahFasilitas', [FasilitasController::class, 'store']);
+        // Route::put('/editFasilitas/{id}', [FasilitasController::class, 'update']);
+        Route::get('/deleteFasilitas/{id}', [FasilitasController::class, 'delete']);
+    });
+
+    // Route::post('/tambahReservasi', [ReservasiController::class, 'store']);
+    // Route::put('/editReservasi/{id}', [ReservasiController::class, 'update']);
+    // Route::get('/deleteReservasi/{id}', [ReservasiController::class, 'delete']);
+
+    Route::get('/pesan-sekarang', [ReservasiController::class, 'pesanSekarang']);
+    Route::post('/pesan-sekarang', [ReservasiController::class, 'pesanSekarang']);
+    Route::post('/aksiPesan-sekarang', [ReservasiController::class, 'aksiPesan']);
+    Route::get('/download-buktiPemesanan/{id}', [ReservasiController::class, 'cetakBuktiPemesanan']);
 });

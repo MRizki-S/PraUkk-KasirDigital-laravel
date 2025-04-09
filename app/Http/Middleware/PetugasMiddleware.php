@@ -4,9 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class RoleMiddleware
+class PetugasMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,13 +16,12 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->role === 'admin') {
+        if (Auth::check() && (Auth::user()->role === 'petugas' || Auth::user()->role === 'admin')) {
             return $next($request);
         }
 
+        // Redirect ke halaman 404 page
         return abort(404);
-
-        // Redirect jika tidak memenuhi syarat
-        // return redirect()->back()->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        // return redirect('/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 }

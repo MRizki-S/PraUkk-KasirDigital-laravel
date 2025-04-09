@@ -10,12 +10,10 @@ use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
-    public function login() {
-        return  view('auth.login');
+    public function login(){
+        return view('auth.login');
     }
-    // aksi login
-    public function aksiLogin(Request $request) {
-        // dd($request->all());
+    public function aksiLogin(Request $request){
         $credentials = $request->validate([
             'email' => 'required',
             'password'=> 'required',
@@ -24,37 +22,35 @@ class AuthController extends Controller
         if(Auth::attempt($credentials)) {
             // dd('masukk bos');
             Session::flash('success', 'Login berhasil! Selamat datang, ' . auth()->user()->nama_lengkap);
-            return redirect('/dashboard');
+            if(Auth::user()->role == 'admin') {
+                return redirect('/dashboard');
+            }elseif(Auth::user()->role == 'petugas') {
+                return redirect('/dashboard');
+            }else{
+                return redirect('/');
+            }
         }else {
             Session::flash('error', 'Email atau password salah. Silakan coba lagi.');
             // dd('gagal bos');
             return redirect('/login');
         }
     }
-
-    // register
     public function register() {
-        // return view('auth.register');
-        $user = User::all();
-        return view('auth.register.index', compact('user'));
+        return view('auth.register');
     }
-    // aksi register
-    public function registration(Request $request) {
-        // dd($request->all());
+    public function createAccount(Request $request) {
         $request->validate([
             'username' => 'required',
-            'email'  => 'required|email|unique:users,email',
+            'email' => 'required',
             'password' => 'required',
-            'nama_lengkap' => 'required'
         ]);
-
-        $request['role'] = 'petugas';
-        $request['password'] = Hash::make($request->password);
+        // dd($request->all());
+        $request['password'] = Hash::make($request['password']);
+        $request['role'] = 'user';
         $user = User::create($request->all());
         if($user) {
-
             Session::flash('success', 'Akun berhasil dibuat!' );
-            return redirect('/register');
+            return redirect('/login');
         }else {
             Session::flash('error', 'Gagal daftar!');
             return redirect('/register');
@@ -67,26 +63,5 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/login');
-    }
-
-
-    public function editUser($id, Request $request) {
-        $request->validate([
-            'username' => 'required',
-            'email'  => 'required|email|unique:users,email,' . $id,
-            'nama_lengkap' => 'required'
-        ]);
-        $user = User::find($id);
-        $user->update($request->all());
-
-        Session::flash('success', 'Data user berhasil diubah!' );
-        return redirect('/register');
-    }
-
-    public function deleteUser($id) {
-        $user = User::find($id);
-        $user->delete();
-        Session::flash('success', 'Data user berhasil dihapus!' );
-        return redirect('/register');
     }
 }

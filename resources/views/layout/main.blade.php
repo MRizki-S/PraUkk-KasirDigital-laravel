@@ -21,9 +21,6 @@
     {{-- sweet alert cdn --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{-- select 2 --}}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
     <style>
         body {
             background-color: #f6f6f6;
@@ -37,7 +34,7 @@
 <body class="min-h-screen">
     <div class="flex flex-col ">
         <div class="bg-white flex justify-between py-5 px-8 w-full shadow-xl z-30">
-            <h2 class="text-2xl text-blue-800 font-bold">Cashier Ukk</h2>
+            <h2 class="text-2xl text-blue-800 font-bold">Hotel Prima</h2>
             <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
                 <button type="button"
                     class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 border border-gray-700"
@@ -102,50 +99,58 @@
 
                     <!-- Product Management Section -->
                     <div>
-                        <h3 class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Product Management</h3>
+                        <h3 class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Management</h3>
                         <div class="mt-2 space-y-4">
-                            <a href="produk"
+                            <a href="/tipe-kamar"
+                                class="flex items-center text-gray-700 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition duration-200"
+                                title="Produk - Manage your products">
+                                <i class="fa-solid fa-stream text-xl"></i>
+                                <span class="ml-4">Tipe Kamar</span>
+                            </a>
+                        </div>
+                        <div class="mt-2 space-y-4">
+                            <a href="/kamar"
                                 class="flex items-center text-gray-700 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition duration-200"
                                 title="Produk - Manage your products">
                                 <i class="fa-solid fa-box text-xl"></i>
-                                <span class="ml-4">Produk</span>
+                                <span class="ml-4">Kamar</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- Sales and Customers Section -->
+                    <!-- Fasilitas-->
+                    @if (Auth::user()->role == 'admin')
                     <div>
-                        <h3 class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Sales & Customers</h3>
+                        <h3 class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Fasilitas</h3>
                         <div class="mt-2 space-y-4">
-                            <a href="penjualan"
+                            <a href="/fasilitas"
                                 class="flex items-center text-gray-700 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition duration-200"
                                 title="Penjualan - Track your sales">
-                                <i class="fa-solid fa-cart-shopping text-xl"></i>
-                                <span class="ml-4">Penjualan</span>
+                                <i class="fa-solid fa-th-list text-xl"></i>
+                                <span class="ml-4">Fasilitas</span>
                             </a>
-                            <a href="pelanggan"
+                            {{-- <a href="/fasilitas-kamar"
                                 class="flex items-center text-gray-700 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition duration-200"
                                 title="Pelanggan - Manage your customers">
-                                <i class="fa-solid fa-users text-xl"></i>
-                                <span class="ml-4">Pelanggan</span>
+                                <i class="fa-solid fa-tags text-xl"></i>
+                                <span class="ml-4">Fasilitas Kamar</span>
+                            </a> --}}
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Admin Section -->
+                    <div>
+                        <h3 class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Reservasi</h3>
+                        <div class="mt-2 space-y-4">
+                            <a href="/reservasi"
+                                class="flex items-center text-gray-700 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition duration-200"
+                                title="Registration - Add or manage users">
+                                <i class="fa-solid fa-address-card text-xl"></i>
+                                <span class="ml-4">Reservasi</span>
                             </a>
                         </div>
                     </div>
-
-                    <!-- Admin Section -->
-                    @if (Auth::user()->role == 'admin')
-                        <div>
-                            <h3 class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Admin Panel</h3>
-                            <div class="mt-2 space-y-4">
-                                <a href="/register"
-                                    class="flex items-center text-gray-700 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition duration-200"
-                                    title="Registration - Add or manage users">
-                                    <i class="fa-solid fa-address-card text-xl"></i>
-                                    <span class="ml-4">Registration</span>
-                                </a>
-                            </div>
-                        </div>
-                    @endif
                 </nav>
             </aside>
 

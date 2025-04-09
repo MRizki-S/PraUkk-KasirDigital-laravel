@@ -91,6 +91,11 @@
                         type="submit">
                         Log in
                     </button>
+
+                    <p class="mt-4 text-center text-gray-600">
+                        Don't have an account? <a href="/register" class="text-blue-600 font-semibold hover:underline">Sign up</a>
+                    </p>
+
                 </form>
             </div>
         </div>
